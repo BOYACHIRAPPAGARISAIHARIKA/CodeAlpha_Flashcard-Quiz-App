@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Quiz App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .score-display {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .navigation {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flashcard Quiz App</h1>
+
+        <!-- Add Flashcard Section -->
+        <div class="section" id="addSection">
+            <h2>Add New Flashcard</h2>
+            <div class="form-group">
+                <input type="text" id="question" placeholder="Enter question">
+                <textarea id="answer" placeholder="Enter answer"></textarea>
+                <button onclick="addFlashcard()">Add Flashcard</button>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div class="section hidden" id="quizSection">
+            <h2>Quiz</h2>
+            <div class="score-display">
+                Correct: <span id="correctCount">0</span> | 
+                Incorrect: <span id="incorrectCount">0</span>
+            </div>
+            <div class="card">
+                <div id="currentQuestion"></div>
+                <div id="currentAnswer" class="hidden"></div>
+            </div>
+            <div class="navigation">
+                <button onclick="showAnswer()">Show Answer</button>
+                <button onclick="handleResponse(true)">Correct</button>
+                <button onclick="handleResponse(false)">Incorrect</button>
+                <button onclick="previousCard()">Previous</button>
+                <button onclick="nextCard()">Next</button>
+            </div>
+        </div>
+
+        <!-- Mode Toggle -->
+        <div class="navigation">
+            <button onclick="toggleMode('add')">Add Flashcards</button>
+            <button onclick="toggleMode('quiz')">Start Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        let flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+        let currentCardIndex = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+
+        function addFlashcard() {
+            const question = document.getElementById('question').value;
+            const answer = document.getElementById('answer').value;
+
+            if (question && answer) {
+                flashcards.push({ question, answer });
+                localStorage.setItem('flashcards', JSON.stringify(flashcards));
+                document.getElementById('question').value = '';
+                document.getElementById('answer').value = '';
+                alert('Flashcard added successfully!');
+            } else {
+                alert('Please fill in both question and answer fields');
+            }
+        }
+
+        function toggleMode(mode) {
+            if (mode === 'quiz') {
+                if (flashcards.length === 0) {
+                    alert('Please add some flashcards first!');
+                    return;
+                }
+                document.getElementById('addSection').classList.add('hidden');
+                document.getElementById('quizSection').classList.remove('hidden');
+                currentCardIndex = 0;
+                updateQuizDisplay();
+            } else {
+                document.getElementById('addSection').classList.remove('hidden');
+                document.getElementById('quizSection').classList.add('hidden');
+            }
+        }
+
+        function updateQuizDisplay() {
+            document.getElementById('currentQuestion').textContent = 
+                `Question ${currentCardIndex + 1}/${flashcards.length}: 
+                ${flashcards[currentCardIndex].question}`;
+            document.getElementById('currentAnswer').textContent = 
+                `Answer: ${flashcards[currentCardIndex].answer}`;
+            document.getElementById('currentAnswer').classList.add('hidden');
+        }
+
+        function showAnswer() {
+            document.getElementById('currentAnswer').classList.remove('hidden');
+        }
+
+        function handleResponse(isCorrect) {
+            if (isCorrect) {
+                correctCount++;
+            } else {
+                incorrectCount++;
+            }
+            updateScoreDisplay();
+            nextCard();
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('incorrectCount').textContent = incorrectCount;
+        }
+
+        function nextCard() {
+            if (currentCardIndex < flashcards.length - 1) {
+                currentCardIndex++;
+                updateQuizDisplay();
+            }
+        }
+
+        function previousCard() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                updateQuizDisplay();
+            }
+        }
+    </script>
+</body>
+</html>
