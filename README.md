@@ -5,7 +5,7 @@ Flashcard Quiz App A minimal web app for creating study flashcards and self-test
 
 A web-based flashcard application for creating and studying flashcards. Track your quiz progress with built-in scoring system.
 
-![Flashcard Quiz App Screenshot](screenshot.png)
+![Image](https://github.com/user-attachments/assets/a2239611-bc95-4cad-9851-8c2204122aa1)
 
 ## Features
 
